@@ -1,1 +1,59 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Battle Zone Ultimate</title>\n    <style>\n        body {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            background-color: #282c34;\n            color: white;\n            font-family: Arial, sans-serif;\n        }\n        canvas {\n            border: 1px solid black;\n            margin-top: 20px;\n        }\n        .ui {\n            margin: 10px;\n        }\n        .bar {\n            width: 100%;\n            height: 30px;\n            background: #555;\n            border-radius: 5px;\n            overflow: hidden;\n        }\n        .health {\n            height: 100%;\n            background: green;\n        }\n        button {\n            margin: 5px;\n            padding: 10px;\n            background-color: #007bff;\n            border: none;\n            border-radius: 5px;\n            color: white;\n            cursor: pointer;\n        }\n        button:hover {\n            background-color: #0056b3;\n        }\n        .hidden {\n            display: none;\n        }\n    </style>\n</head>\n<body>\n    <h1>Battle Zone Ultimate</h1>\n    <canvas id="gameCanvas" width="800" height="600"></canvas>\n    <div class="ui">\n        <div class="bar">\n            <div class="health" id="healthBar" style="width: 100%;"></div>\n        </div>\n        <div>Ammo: <span id="ammoCounter">30</span></div>\n        <div>Kills: <span id="killsTracker">0</span></div>\n        <div>Score: <span id="scoreDisplay">0</span></div>\n        <button id="buildButton">Build</button>\n        <button id="instructionsButton">Instructions</button>\n        <div id="instructionsPanel" class="hidden">\n            <h2>Instructions</h2>\n            <p>Press W to move forward, S to move back, A to move left, D to move right.</p>\n            <p>Use the mouse to aim and click to shoot.</p>\n            <button id="closeInstructions">Close</button>\n        </div>\n        <div id="gameOverScreen" class="hidden">\n            <h2>Game Over</h2>\n            <p>Your Score: <span id="finalScore">0</span></p>\n            <button id="restartButton">Restart</button>\n        </div>\n    </div>\n    <script>\n        // Game initialization script\n        const canvas = document.getElementById('gameCanvas');\n        const ctx = canvas.getContext('2d');\n        let health = 100;\n        let ammo = 30;\n        let kills = 0;\n        let score = 0;\n\n        function updateUI() {\n            document.getElementById('healthBar').style.width = health + '%';\n            document.getElementById('ammoCounter').innerText = ammo;\n            document.getElementById('killsTracker').innerText = kills;\n            document.getElementById('scoreDisplay').innerText = score;\n        }\n\n        function showInstructions() {\n            document.getElementById('instructionsPanel').classList.remove('hidden');\n        }\n\n        function closeInstructions() {\n            document.getElementById('instructionsPanel').classList.add('hidden');\n        }\n\n        function gameOver() {\n            document.getElementById('finalScore').innerText = score;\n            document.getElementById('gameOverScreen').classList.remove('hidden');\n        }\n\n        document.getElementById('instructionsButton').onclick = showInstructions;\n        document.getElementById('closeInstructions').onclick = closeInstructions;\n        document.getElementById('restartButton').onclick = () => { location.reload(); };\n\n        // Example of game update loop and logic\n        function gameLoop() {\n            // Game logic here\n            updateUI();\n            requestAnimationFrame(gameLoop);\n        }\n        gameLoop();\n    </script>\n</body>\n</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Zone Ultimate</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { background: #000; display: block; margin: auto; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Player
+        let player = { x: canvas.width / 2, y: canvas.height / 2, width: 50, height: 50, speed: 5, health: 100 };
+
+        // Key states
+        let keys = {};
+        document.addEventListener('keydown', (e) => { keys[e.code] = true; });
+        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+        // Game loop
+        function gameLoop() {
+            updateGame();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Update game
+        function updateGame() {
+            if (keys['ArrowUp']) player.y -= player.speed;
+            if (keys['ArrowDown']) player.y += player.speed;
+            if (keys['ArrowLeft']) player.x -= player.speed;
+            if (keys['ArrowRight']) player.x += player.speed;
+
+            // Boundary detection
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+            player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+        }
+
+        // Draw game
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+            ctx.fillStyle = 'green'; // Player color
+            ctx.fillRect(player.x, player.y, player.width, player.height); // Draw player
+        }
+
+        // Start game
+        gameLoop();
+    </script>
+</body>
+</html>
